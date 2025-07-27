@@ -1,0 +1,2 @@
+pyftpdlib
+mcp.py[server]

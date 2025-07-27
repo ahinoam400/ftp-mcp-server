@@ -8,6 +8,7 @@ This project contains two main components:
 
 - Python 3.7+
 - pip (Python package installer)
+- Node.js and npm (for the Gemini CLI)
 
 ## Setup
 
@@ -32,9 +33,13 @@ This project contains two main components:
         ```
 
 3.  **Install the required dependencies:**
-    A `requirements.txt` file is not provided, but based on the code, you'll need the following packages. You can install them using pip:
     ```bash
-    pip install pyftpdlib "mcp.py[server]"
+    pip install -r requirements.txt
+    ```
+
+4.  **Install the Gemini CLI:**
+    ```bash
+    npm install -g @google/gemini-cli
     ```
 
 ## Running the Servers
@@ -68,12 +73,32 @@ The MCP server exposes several tools, including tools to interact with the FTP s
 
 ### Connecting from the Gemini CLI
 
-1.  Start the FTP server and the MCP server in separate terminals as described above.
-2.  In the Gemini CLI, use the `/mcp` command to connect to your running MCP server:
+1.  **Start the FTP server and the MCP server in separate terminals as described above.**
+
+2.  **Configure the Gemini CLI to use the local MCP server:**
+    -   Locate your Gemini settings file. It's usually at `~/.gemini/settings.json` (for Linux/macOS) or `C:\Users\<YourUsername>\.gemini\settings.json` (for Windows).
+    -   If the file or `.gemini` directory doesn't exist, create it.
+    -   Open `settings.json` and add the following configuration. This tells Gemini how to start your local server.
+
+    ```json
+    {
+      "mcpServers": {
+        "my-python-ftp-server": {
+          "command": "python",
+          "args": ["/path/to/your/my-python-mcp-server/server.py"],
+          "type": "stdio"
+        }
+      }
+    }
     ```
-    /mcp connect localhost:8765
-    ```
-3.  Once connected, Gemini will have access to the tools defined in `server.py`. You can then instruct Gemini to use them.
+    -   **CRITICAL:** You **must** replace `/path/to/your/my-python-mcp-server/server.py` with the correct **absolute path** to the `server.py` file on your system.
+
+3.  **Start Gemini and connect:**
+    -   Open a new terminal and run `gemini`.
+    -   Inside the Gemini CLI, verify the connection with the `/mcp` command. You should see `my-python-ftp-server` in the list of available servers.
+
+4.  **Interact with your tools:**
+    Once connected, you can use natural language to invoke the tools from your `server.py` file.
 
     **Example Workflow:**
 
@@ -85,12 +110,3 @@ The MCP server exposes several tools, including tools to interact with the FTP s
 
     -   **You:** `Please upload "my_local_file.txt" to the server as "remote_copy.txt".`
     -   **Gemini (using the tool):** `[tool_code: ftp_put(local_path="my_local_file.txt", remote_path="remote_copy.txt")]`
-
-### General Usage
-
-1.  Start the FTP server in one terminal.
-2.  Start the MCP server in another terminal.
-3.  Connect to the MCP server using an MCP client (like Gemini).
-4.  From the client, you can now use the `ftp_` tools to connect to and interact with your running FTP server.
-    -   Example: Use `ftp_connect` with `server="127.0.0.1"`, `port=2121`, `user="user"`, and `password="12345"`.
-    -   Then, you can use `ftp_list`, `ftp_get`, `ftp_put`, etc.
