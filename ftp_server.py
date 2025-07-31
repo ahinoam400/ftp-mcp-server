@@ -7,7 +7,9 @@ def main():
     authorizer = DummyAuthorizer()
 
     # Define a new user having full permissions on the CWD
-    authorizer.add_user("user", "12345", "ftp_home", perm="elradfmw")
+    import os
+    home_dir = os.path.abspath("ftp_home")
+    authorizer.add_user("user", "12345", home_dir, perm="elradfmw")
 
     # Instantiate FTP handler class
     handler = FTPHandler
