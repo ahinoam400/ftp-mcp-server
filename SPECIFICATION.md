@@ -29,7 +29,9 @@ graph TD
         E[File System]
     end
 
-    A -- "Natural Language Commands" --> B
+    A -- "Natural Language Commands" --> LLM
+    LLM --text -->A
+    A--MCP-->B
     B -- "Executes Tools" --> C
     C -- "FTP Commands" --> D
     D -- "File Operations" --> E
@@ -63,22 +65,14 @@ graph TD
 
 ### 4.1. Additional Features
 
--   **User Management**: A system for adding, removing, and managing users and their permissions on the FTP server.
 -   **Asynchronous Support**: Introduce asynchronous capabilities to the MCP server to handle multiple client requests  concurrently without blocking. This will improve performance and responsiveness, especially for long-running operations.
 -   **Logging**: Implement a logging system to record all server activity.
 -   **Error Handling**: Improve error handling and provide more informative error messages.
--   **Tool Expansion**: Add more tools to the MCP server for more advanced file operations and server management.
 -   **Web Interface**: A web-based interface for managing the servers and viewing logs.
--   **Database Integration**: Use a database to store user information and file metadata.
+-   **Anonymous FTP Support**: Allow optional anonymous access to the FTP server for public file sharing, without requiring user authentication.
 
 
 ### 4.2. MCP Tool Expansion
 
 -   **Recursive Operations**: Implement recursive logic for file operations such as `copy`, `delete`, and `move`. For example, a user should be able to request to copy an entire folder, and the server will recursively copy all files and subfolders within it.
 
-
-### 4.3. Technology Stack for Future Development
-
--   **Web Framework**: FastAPI or Flask
--   **Database**: SQLite or PostgreSQL
--   **Frontend**: React or Vue.js
