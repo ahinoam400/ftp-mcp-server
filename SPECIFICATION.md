@@ -42,7 +42,6 @@ graph TD
 ### 3.1. FTP Server (`ftp_server.py`)
 
 -   **Functionality**: Provides a standard FTP service.
--   **Authentication**: Uses a dummy authorizer with a single user.
 -   **Host**: 0.0.0.0
 -   **Port**: 2121
 -   **User**: `user`
