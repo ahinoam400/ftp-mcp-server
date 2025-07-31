@@ -1,8 +1,8 @@
-# Project Specification: My Python MCP Server
+# Project Specification: Python MCP Server
 
 ## 1. Overview
 
-This document outlines the specification for the My Python MCP Server project. The project consists of two main components: a standalone FTP server and an MCP (Multi-purpose Cooperative Protocol) server. The MCP server provides a set of tools to interact with the FTP server, allowing for file management operations through a natural language interface.
+This document outlines the specification for the Python MCP Server project. The project consists of two main components: a standalone FTP server and an MCP (Multi-purpose Cooperative Protocol) server. The MCP server provides a set of tools to interact with the FTP server, allowing for file management operations through a natural language interface.
 
 ## 2. System Architecture
 
