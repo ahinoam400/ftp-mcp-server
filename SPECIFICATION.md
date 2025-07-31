@@ -64,11 +64,12 @@ graph TD
 
 ### 4.1. Additional Features
 
--   **Asynchronous Support**: Introduce asynchronous capabilities to the MCP server to handle multiple client requests  concurrently without blocking. This will improve performance and responsiveness, especially for long-running operations.
--   **Logging**: Implement a logging system to record all server activity.
--   **Error Handling**: Improve error handling and provide more informative error messages.
+-   **Asynchronous Support**: Introduce asynchronous capabilities to the MCP server to handle multiple client requests  concurrently without blocking.
 -   **Web Interface**: A web-based interface for managing the servers and viewing logs.
 -   **Anonymous FTP Support**: Allow optional anonymous access to the FTP server for public file sharing, without requiring user authentication.
+-   **Logging**: Implement a logging system to record all server activity.
+-   **Error Handling**: Improve error handling and provide more informative error messages.
+
 
 
 ### 4.2. MCP Tool Expansion
