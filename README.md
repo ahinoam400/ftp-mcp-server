@@ -73,7 +73,7 @@ The MCP server exposes several tools, including tools to interact with the FTP s
 
 ### Connecting from the Gemini CLI
 
-1.  **Start the FTP server and the MCP server in separate terminals as described above.**
+1.  **Start the FTP server as described above.**
 
 2.  **Configure the Gemini CLI to use the local MCP server:**
     -   Locate your Gemini settings file. It's usually at `~/.gemini/settings.json` (for Linux/macOS) or `C:\Users\<YourUsername>\.gemini\settings.json` (for Windows).
@@ -84,7 +84,7 @@ The MCP server exposes several tools, including tools to interact with the FTP s
     {
       "mcpServers": {
         "my-python-ftp-server": {
-          "command": "python",
+          "command": "/path/to/your/my-python-mcp-server/.venv/Scripts/python.exe",
           "args": ["/path/to/your/my-python-mcp-server/server.py"],
           "type": "stdio"
         }
