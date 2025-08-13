@@ -1,2 +1,2 @@
 pyftpdlib
-mcp.py[server]
+fastmcp[server]
