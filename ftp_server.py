@@ -19,9 +19,12 @@ def main():
     # Instantiate a dummy authorizer for managing 'virtual' users
     authorizer = DummyAuthorizer()
 
+    # Ensure the FTP home directory exists
+    FTP_HOME_DIR.mkdir(exist_ok=True)
+
     # Define a new user having full permissions on the CWD & anonymous user
-    authorizer.add_user("user", "12345", FTP_HOME_DIR, perm=FULL_PERMS)
-    authorizer.add_anonymous(FTP_HOME_DIR, perm=ANONYMOUS_PERMS)
+    authorizer.add_user("user", "12345", str(FTP_HOME_DIR), perm=FULL_PERMS)
+    authorizer.add_anonymous(str(FTP_HOME_DIR), perm=ANONYMOUS_PERMS)
 
     # Instantiate FTP handler class
     handler = FTPHandler
