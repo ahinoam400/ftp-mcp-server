@@ -2,41 +2,41 @@ import asyncio
 from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 
-from ftp_client_logic import (
-    ftp_connect as ftp_connect_logic,
-    ftp_disconnect as ftp_disconnect_logic,
-    ftp_list as ftp_list_logic,
-    ftp_nlst as ftp_nlst_logic,
-    ftp_mlsd as ftp_mlsd_logic,
-    ftp_get as ftp_get_logic,
-    ftp_put as ftp_put_logic,
-    ftp_delete_recursive as ftp_delete_recursive_logic,
-    ftp_move as ftp_move_logic,
-    ftp_copy_recursive as ftp_copy_recursive_logic,
-    ftp_cd as ftp_cd_logic,
-    logger,
-)
+from ftp_client_logic import (ftp_connect, ftp_disconnect, ftp_list, ftp_nlst, ftp_mlsd, ftp_retrieve_file,
+                              ftp_store_file, ftp_store_file_unique, ftp_cwd, ftp_cwd, ftp_rename, ftp_mkdir,
+                              ftp_rmdir, ftp_abort_transfer, ftp_cdup_directory, ftp_set_pasv, ftp_send_port,
+                              ftp_get_file_size, ftp_send_command, ftp_void_command, ftp_delete_recursive, 
+                              ftp_copy_recursive, logger)
 
 # Initialize the MCP server
 mcp = FastMCP("FTPClient")
 
 # Wrap the logic functions with the MCP tool decorator
-mcp.tool()(ftp_connect_logic)
-mcp.tool()(ftp_disconnect_logic)
-mcp.tool()(ftp_list_logic)
-mcp.tool()(ftp_nlst_logic)
-mcp.tool()(ftp_mlsd_logic)
-mcp.tool()(ftp_get_logic)
-mcp.tool()(ftp_put_logic)
-mcp.tool()(ftp_delete_recursive_logic)
-mcp.tool()(ftp_move_logic)
-mcp.tool()(ftp_copy_recursive_logic)
-mcp.tool()(ftp_cd_logic)
-
+mcp.tool()(ftp_connect)
+mcp.tool()(ftp_disconnect)
+mcp.tool()(ftp_list)
+mcp.tool()(ftp_nlst)
+mcp.tool()(ftp_mlsd)
+mcp.tool()(ftp_retrieve_file)
+mcp.tool()(ftp_store_file)
+mcp.tool()(ftp_store_file_unique)
+mcp.tool()(ftp_cwd)
+mcp.tool()(ftp_rename)
+mcp.tool()(ftp_mkdir)
+mcp.tool()(ftp_rmdir)
+mcp.tool()(ftp_abort_transfer)
+mcp.tool()(ftp_cdup_directory)
+mcp.tool()(ftp_set_pasv)
+mcp.tool()(ftp_send_port)
+mcp.tool()(ftp_get_file_size)
+mcp.tool()(ftp_send_command)
+mcp.tool()(ftp_void_command)
+mcp.tool()(ftp_delete_recursive)
+mcp.tool()(ftp_copy_recursive)
 
 async def main():
     """
-    Main function that runs the MCP server.
+    Runs the MCP server.
     """
     logger.info("Starting MCP server with ftp client functionalities...")
     
@@ -49,4 +49,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logger.info("Server stopped by user.")
     except Exception:
-        logger.exception("Unexpected error in main loop")
+        logger.exception("Unexpected error")
