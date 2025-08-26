@@ -12,10 +12,10 @@ from ftp_client_logic import (
     ftp_list,
     ftp_nlst,
     ftp_mlsd,
-    ftp_get,
-    ftp_put,
-    ftp_cd,
-    ftp_move,
+    ftp_retrieve_file,
+    ftp_store_file,
+    ftp_cwd,
+    ftp_rename,
     ftp_copy_recursive,
     ftp_delete_recursive,
     ftp_sessions,
@@ -83,14 +83,14 @@ class TestFTPServer(unittest.TestCase):
     def test_02_upload_and_download(self):
         # Upload a file
         remote_filename = "uploaded_test_file.txt"
-        ftp_put(self.session_id, str(self.local_test_file), remote_filename)
+        ftp_store_file(self.session_id, str(self.local_test_file), remote_filename)
 
         # Verify the file was uploaded
         files = ftp_nlst(self.session_id)
         self.assertIn(remote_filename, files)
 
         # Download the file and verify its content
-        content = ftp_get(self.session_id, remote_filename)
+        content = ftp_retrieve_file(self.session_id, remote_filename)
         self.assertEqual(content, self.local_test_file.read_text())
 
         # Clean up the uploaded file
@@ -103,12 +103,12 @@ class TestFTPServer(unittest.TestCase):
         ftp.mkd(test_dir)
 
         # Change to the new directory
-        response = ftp_cd(self.session_id, test_dir)
+        response = ftp_cwd(self.session_id, test_dir)
         self.assertTrue("Successfully changed directory" in response)
         self.assertTrue(test_dir in ftp.pwd())
 
         # Change back to the home directory
-        response = ftp_cd(self.session_id, "/")
+        response = ftp_cwd(self.session_id, "/")
         self.assertTrue("Successfully changed directory" in response)
         self.assertFalse(test_dir in ftp.pwd())
 
@@ -119,10 +119,10 @@ class TestFTPServer(unittest.TestCase):
         # Upload a file to move
         source = "move_source.txt"
         dest = "move_dest.txt"
-        ftp_put(self.session_id, str(self.local_test_file), source)
+        ftp_store_file(self.session_id, str(self.local_test_file), source)
 
         # Move the file
-        ftp_move(self.session_id, source, dest)
+        ftp_rename(self.session_id, source, dest)
 
         # Verify the move
         files = ftp_nlst(self.session_id)
@@ -143,8 +143,8 @@ class TestFTPServer(unittest.TestCase):
         ftp.mkd(f"{source_dir}/{sub_dir}")
 
         # Upload files to both directories
-        ftp_put(self.session_id, str(self.local_test_file), f"{source_dir}/root_file.txt")
-        ftp_put(self.session_id, str(self.local_test_file), f"{source_dir}/{sub_dir}/sub_file.txt")
+        ftp_store_file(self.session_id, str(self.local_test_file), f"{source_dir}/root_file.txt")
+        ftp_store_file(self.session_id, str(self.local_test_file), f"{source_dir}/{sub_dir}/sub_file.txt")
 
         # --- Test Recursive Copy ---
         dest_dir = "dest_copy_recursive"
