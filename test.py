@@ -47,3 +47,16 @@ async def test_list_tools(main_mcp_client: Client[FastMCPTransport]):
 
     assert len(list_tools) == 19
 
+
+@pytest.mark.asyncio
+async def test_ftp_connect_and_disconnect(main_mcp_client: Client[FastMCPTransport]):
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    assert "Successfully connected" in connect_response.data
+    
+    # Extract session ID from the response
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+    
+    # Disconnect from the FTP server
+    disconnect_response = await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+    assert "disconnected successfully" in disconnect_response.data
