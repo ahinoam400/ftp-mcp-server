@@ -444,42 +444,7 @@ def ftp_cdup_directory(session_id: str) -> str:
         raise ToolError(f"Error changing to parent directory: {e}")
 
 
-def ftp_set_pasv(session_id: str, set_pasv: bool = True) -> str:
-    """
-    Enables or disables passive mode for data transfers.
-    
-    :param session_id: The unique ID of the active session.
-    :param set_pasv: True to enable passive mode, False to disable.
-    :return: A success message.
-    """
-    ftp = _check_session(session_id)
-    try:
-        ftp.set_pasv(set_pasv)
-        mode = "Passive" if set_pasv else "Active"
-        logger.info(f"Set data transfer mode to {mode}.")
-        return f"Data transfer mode set to {mode}."
-    except Exception as e:
-        logger.exception(f"Error setting passive mode for session '{session_id}'.")
-        raise ToolError(f"Failed to set passive mode: {e}")
 
-
-def ftp_send_port(session_id: str, host: str, port: int) -> str:
-    """
-    Sends a 'PORT' command to the server for active mode data transfer.
-    
-    :param session_id: The unique ID of the active session.
-    :param host: The client's IP address.
-    :param port: The client's port to listen on.
-    :return: A success message.
-    """
-    ftp = _check_session(session_id)
-    try:
-        ftp.sendport(host, port)
-        logger.info(f"Sent PORT command for {host}:{port}.")
-        return f"Sent PORT command for {host}:{port}."
-    except Exception as e:
-        logger.exception(f"Error executing PORT command for '{host}:{port}' for session '{session_id}'.")
-        raise ToolError(f"Failed to complete PORT command: {e}")
 
 
 def ftp_get_file_size(session_id: str, file_path: str) -> str:

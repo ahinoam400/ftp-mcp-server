@@ -30,6 +30,14 @@ def main():
     handler = FTPHandler
     handler.authorizer = authorizer
 
+    # --- Passive mode configuration ---
+    # Specify a masquerade address if behind a NAT/gateway
+    # Replace 'YOUR_PUBLIC_IP' with your actual public IP address
+    handler.masquerade_address = '0.0.0.0'
+    # Specify the range of ports to use for passive connections
+    # These ports must be open in your firewall
+    handler.passive_ports = range(60000, 65535) # Example range
+
     # Define a new server address and port
     address = (str(SERVER_IP), SERVER_PORT)
 
