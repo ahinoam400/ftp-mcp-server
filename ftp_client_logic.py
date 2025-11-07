@@ -170,9 +170,9 @@ def ftp_retrieve_file(session_id: str, filename: str) -> str:
 
     try:
         ftp.retrbinary(f"RETR {filename}", content_list.append)
-        content = "\n".join(content_list)
+        content = b"".join(content_list).decode("utf-8")
         logger.info(f"Retrieved content of '{filename}' for session '{session_id}'.")
-        return content    
+        return content
     except Exception as e:
         logger.exception(f"Error retrieving file '{filename}' for session '{session_id}'.")
         raise ToolError(f"Error retrieving file content: {e}")

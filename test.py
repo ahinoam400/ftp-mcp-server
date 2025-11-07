@@ -60,3 +60,17 @@ async def test_ftp_connect_and_disconnect(main_mcp_client: Client[FastMCPTranspo
     # Disconnect from the FTP server
     disconnect_response = await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
     assert "disconnected successfully" in disconnect_response.data
+
+
+@pytest.mark.asyncio
+async def test_retrieve_file_content(main_mcp_client: Client[FastMCPTransport]):
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    # Retrieve the content of demo.txt
+    file_content_response = await main_mcp_client.call_tool("ftp_retrieve_file", {"session_id": session_id, "filename": "demo.txt"})
+    assert "Hello world." in file_content_response.data
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})

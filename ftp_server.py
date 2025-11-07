@@ -8,7 +8,7 @@ from ipaddress import IPv4Address
 # General Definitions
 SERVER_IP = IPv4Address("0.0.0.0")
 SERVER_PORT = 2121
-FTP_HOME_DIR = Path("ftp_home")
+FTP_HOME_DIR = Path(__file__).parent.parent / "ftp_home"
 USERNAME1 = "user"
 PASSWORD1 = "12345"
 FULL_PERMS = "elradfmw"
