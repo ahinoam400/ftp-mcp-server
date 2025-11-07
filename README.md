@@ -102,12 +102,11 @@ This project contains two main components:
 
 ### Connecting to an External FTP Server
 
-The MCP server is not limited to the local FTP server. You can connect to any FTP server by providing the correct details to the `ftp_connect` tool.
+The MCP server is not limited to the local FTP server. You can connect to any FTP server by providing the correct details to the `ftp_connect` tool.  
 
-1.  **Start your own FTP server**
+1.  **Make sure the your FTP server is runing**
 
 2. **Follow steps 2 and 3 above**
-   
 
 3.  **Use the `ftp_connect` tool with the external server's details.**
 
@@ -123,3 +122,4 @@ The MCP server is not limited to the local FTP server. You can connect to any FT
     -   **Gemini (using the tool):** `[tool_code: ftp_connect(host="ftp.example.com", username="myuser", password="mypassword123")]`
 
     Once connected, you will receive a session ID and can use the other FTP tools (`ftp_list`, `ftp_get`, etc.) to interact with the remote server.
+Free online FTP server to try: https://dlptest.com/ftp-test/ 
