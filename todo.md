@@ -10,12 +10,12 @@ This file outlines the tasks required to create comprehensive tests for all MCP 
 ## Directory Listing Tools
 - [x] Test `ftp_list`: List contents of the root directory.
 - [x] Test `ftp_nlst`: List contents of the root directory (names only).
-- [ ] Test `ftp_mlsd`: List contents of the root directory (machine-readable).
+- [x] Test `ftp_mlsd`: List contents of the root directory (machine-readable).
 
 ## File Transfer Tools
-- [ ] Test `ftp_retrieve_file`: Retrieve an existing file.
-- [ ] Test `ftp_retrieve_file`: Attempt to retrieve a non-existent file.
-- [ ] Test `ftp_store_file`: Upload a new file.
+- [x] Test `ftp_retrieve_file`: Retrieve an existing file.
+- [x] Test `ftp_retrieve_file`: Attempt to retrieve a non-existent file.
+- [x] Test `ftp_store_file`: Upload a new file.
 - [ ] Test `ftp_store_file`: Overwrite an existing file.
 - [ ] Test `ftp_store_file_unique`: Upload a file and verify a unique name is generated.
 

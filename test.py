@@ -102,22 +102,77 @@ async def test_ftp_nlst(main_mcp_client: Client[FastMCPTransport]):
     # Disconnect from the FTP server
     await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
 
-
 @pytest.mark.asyncio
-async def test_ftp_list(main_mcp_client: Client[FastMCPTransport]):
-    """Tests the ftp_list tool (detailed list)."""
+async def test_ftp_mlsd(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_mlsd tool (machine-readable list)."""
     # Connect to the FTP server
     connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
     session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
 
-    # Call the list tool
-    list_response = await main_mcp_client.call_tool("ftp_list", {"session_id": session_id, "directory": "/"})
+    # Call the mlsd tool
+    mlsd_response = await main_mcp_client.call_tool("ftp_mlsd", {"session_id": session_id, "directory": "/"})
     
     # Check assertions
-    assert isinstance(list_response.data, list)
-    # Combine the list of strings into one big string to check for the filename
-    full_listing = "\n".join(list_response.data)
-    assert "demo.txt" in full_listing, "demo.txt not found in LIST response"
+    assert isinstance(mlsd_response.data, list)
+    assert len(mlsd_response.data) > 0
+    assert "Root()" in str(mlsd_response.data[0]), "MLSD response does not contain expected Root() object"
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_store_new_file(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_store_file tool for uploading a new file."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    local_filepath = "temp_upload.txt"
+    remote_filename = "uploaded_new_file.txt"
+
+    # Upload the new file
+    store_response = await main_mcp_client.call_tool("ftp_store_file", {"session_id": session_id, "local_filepath": local_filepath, "remote_filename": remote_filename})
+    assert f"File '{local_filepath}' uploaded successfully." in store_response.data
+
+    # Verify the file exists on the server by listing the directory
+    nlst_response = await main_mcp_client.call_tool("ftp_nlst", {"session_id": session_id, "directory": "/"})
+    assert remote_filename in nlst_response.data
+
+    # Clean up: delete the uploaded file from the server
+    await main_mcp_client.call_tool("ftp_delete_recursive", {"session_id": session_id, "remote_path": remote_filename})
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_retrieve_non_existent_file(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_retrieve_file tool for a non-existent file."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    # Attempt to retrieve a non-existent file
+    with pytest.raises(ToolError) as excinfo:
+        await main_mcp_client.call_tool("ftp_retrieve_file", {"session_id": session_id, "filename": "non_existent_file.txt"})
+    
+    assert "Error retrieving file content" in str(excinfo.value) or "No such file or directory" in str(excinfo.value)
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_retrieve_existing_file(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_retrieve_file tool for an existing file."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    # Retrieve the content of demo.txt
+    file_content_response = await main_mcp_client.call_tool("ftp_retrieve_file", {"session_id": session_id, "filename": "demo.txt"})
+    assert "Hello world." in file_content_response.data
 
     # Disconnect from the FTP server
     await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
