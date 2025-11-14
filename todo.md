@@ -1,0 +1,41 @@
+# MCP Tools Test Plan
+
+This file outlines the tasks required to create comprehensive tests for all MCP tools in the project.
+
+## Connection Tools
+- [ ] Test `ftp_connect`: Successful connection with valid credentials.
+- [ ] Test `ftp_connect`: Failed connection with invalid credentials.
+- [ ] Test `ftp_disconnect`: Successful disconnection.
+
+## Directory Listing Tools
+- [ ] Test `ftp_list`: List contents of the root directory.
+- [ ] Test `ftp_nlst`: List contents of the root directory (names only).
+- [ ] Test `ftp_mlsd`: List contents of the root directory (machine-readable).
+
+## File Transfer Tools
+- [ ] Test `ftp_retrieve_file`: Retrieve an existing file.
+- [ ] Test `ftp_retrieve_file`: Attempt to retrieve a non-existent file.
+- [ ] Test `ftp_store_file`: Upload a new file.
+- [ ] Test `ftp_store_file`: Overwrite an existing file.
+- [ ] Test `ftp_store_file_unique`: Upload a file and verify a unique name is generated.
+
+## Directory Management Tools
+- [ ] Test `ftp_mkdir`: Create a new directory.
+- [ ] Test `ftp_cwd`: Change the current working directory.
+- [ ] Test `ftp_cdup_directory`: Change to the parent directory.
+- [ ] Test `ftp_rmdir`: Remove an empty directory.
+- [ ] Test `ftp_rmdir`: Attempt to remove a non-empty directory.
+
+## File and Directory Manipulation Tools
+- [ ] Test `ftp_rename`: Rename a file.
+- [ ] Test `ftp_rename`: Rename a directory.
+- [ ] Test `ftp_delete_recursive`: Delete a file.
+- [ ] Test `ftp_delete_recursive`: Delete a non-empty directory.
+- [ ] Test `ftp_copy_recursive`: Copy a file.
+- [ ] Test `ftp_copy_recursive`: Copy a directory.
+
+## Miscellaneous Tools
+- [ ] Test `ftp_get_file_size`: Get the size of an existing file.
+- [ ] Test `ftp_send_command`: Send a simple command (e.g., `NOOP`).
+- [ ] Test `ftp_void_command`: Send a void command (e.g., `NOOP`).
+- [ ] Test `ftp_abort_transfer`: Abort a file transfer (requires a long-running transfer to test effectively).
