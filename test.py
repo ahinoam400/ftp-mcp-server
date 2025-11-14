@@ -1,8 +1,10 @@
 # pytest integration test
+from fastmcp.exceptions import ToolError
 import pytest
 from fastmcp.client import Client
 from fastmcp.client.transports import FastMCPTransport
 import pytest_asyncio
+
 
 
 from fastmcp import FastMCP
@@ -74,3 +76,11 @@ async def test_retrieve_file_content(main_mcp_client: Client[FastMCPTransport]):
 
     # Disconnect from the FTP server
     await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+@pytest.mark.asyncio
+async def test_ftp_connect_invalid_credentials(main_mcp_client: Client[FastMCPTransport]):
+    # Attempt to connect with invalid credentials
+    with pytest.raises(ToolError) as excinfo:
+        await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "invalid", "password": "invalid"})
+    
+    assert "Authentication failed" in str(excinfo.value) or "Login incorrect" in str(excinfo.value)

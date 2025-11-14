@@ -3,9 +3,9 @@
 This file outlines the tasks required to create comprehensive tests for all MCP tools in the project.
 
 ## Connection Tools
-- [ ] Test `ftp_connect`: Successful connection with valid credentials.
-- [ ] Test `ftp_connect`: Failed connection with invalid credentials.
-- [ ] Test `ftp_disconnect`: Successful disconnection.
+- [x] Test `ftp_connect`: Successful connection with valid credentials.
+- [x] Test `ftp_connect`: Failed connection with invalid credentials.
+- [x] Test `ftp_disconnect`: Successful disconnection.
 
 ## Directory Listing Tools
 - [ ] Test `ftp_list`: List contents of the root directory.
