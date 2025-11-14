@@ -176,3 +176,35 @@ async def test_ftp_retrieve_existing_file(main_mcp_client: Client[FastMCPTranspo
 
     # Disconnect from the FTP server
     await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_store_overwrite_file(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_store_file tool for overwriting an existing file."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    local_filepath = "temp_upload.txt"
+    remote_filename = "ע"
+
+    # Get original content of demo.txt to restore later
+    original_content_response = await main_mcp_client.call_tool("ftp_retrieve_file", {"session_id": session_id, "filename": remote_filename})
+    original_content = original_content_response.data
+
+    # Upload the new file to overwrite demo.txt
+    store_response = await main_mcp_client.call_tool("ftp_store_file", {"session_id": session_id, "local_filepath": local_filepath, "remote_filename": remote_filename})
+    assert f"File '{local_filepath}' uploaded successfully." in store_response.data
+
+    # Verify the content of demo.txt has changed
+    new_content_response = await main_mcp_client.call_tool("ftp_retrieve_file", {"session_id": session_id, "filename": remote_filename})
+    assert "This is a temporary file for upload." in new_content_response.data
+    assert original_content != new_content_response.data
+
+    # Restore original content of demo.txt
+    with open(local_filepath, 'w') as f:
+        f.write(original_content)
+    await main_mcp_client.call_tool("ftp_store_file", {"session_id": session_id, "local_filepath": local_filepath, "remote_filename": remote_filename})
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
