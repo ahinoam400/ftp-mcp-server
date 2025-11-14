@@ -18,3 +18,4 @@ def ftp_server():
     # Terminate the FTP server process after tests are done
     process.terminate()
     process.wait()
+

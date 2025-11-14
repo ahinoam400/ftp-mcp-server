@@ -8,8 +8,8 @@ This file outlines the tasks required to create comprehensive tests for all MCP 
 - [x] Test `ftp_disconnect`: Successful disconnection.
 
 ## Directory Listing Tools
-- [ ] Test `ftp_list`: List contents of the root directory.
-- [ ] Test `ftp_nlst`: List contents of the root directory (names only).
+- [x] Test `ftp_list`: List contents of the root directory.
+- [x] Test `ftp_nlst`: List contents of the root directory (names only).
 - [ ] Test `ftp_mlsd`: List contents of the root directory (machine-readable).
 
 ## File Transfer Tools

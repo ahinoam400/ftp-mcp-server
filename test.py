@@ -84,3 +84,40 @@ async def test_ftp_connect_invalid_credentials(main_mcp_client: Client[FastMCPTr
         await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "invalid", "password": "invalid"})
     
     assert "Authentication failed" in str(excinfo.value) or "Login incorrect" in str(excinfo.value)
+
+@pytest.mark.asyncio
+async def test_ftp_nlst(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_nlst tool (names only list)."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    # Call the nlst tool
+    nlst_response = await main_mcp_client.call_tool("ftp_nlst", {"session_id": session_id, "directory": "/"})
+    
+    # Check assertions
+    assert isinstance(nlst_response.data, list)
+    assert "demo.txt" in nlst_response.data, "demo.txt not found in NLST response"
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_list(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_list tool (detailed list)."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    # Call the list tool
+    list_response = await main_mcp_client.call_tool("ftp_list", {"session_id": session_id, "directory": "/"})
+    
+    # Check assertions
+    assert isinstance(list_response.data, list)
+    # Combine the list of strings into one big string to check for the filename
+    full_listing = "\n".join(list_response.data)
+    assert "demo.txt" in full_listing, "demo.txt not found in LIST response"
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
