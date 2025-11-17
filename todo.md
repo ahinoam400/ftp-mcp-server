@@ -20,11 +20,11 @@ This file outlines the tasks required to create comprehensive tests for all MCP 
 - [ ] Test `ftp_store_file_unique`: Upload a file and verify a unique name is generated.
 
 ## Directory Management Tools
-- [ ] Test `ftp_mkdir`: Create a new directory.
-- [ ] Test `ftp_cwd`: Change the current working directory.
-- [ ] Test `ftp_cdup_directory`: Change to the parent directory.
-- [ ] Test `ftp_rmdir`: Remove an empty directory.
-- [ ] Test `ftp_rmdir`: Attempt to remove a non-empty directory.
+- [x] Test `ftp_mkdir`: Create a new directory.
+- [x] Test `ftp_cwd`: Change the current working directory.
+- [x] Test `ftp_cdup_directory`: Change to the parent directory.
+- [x] Test `ftp_rmdir`: Remove an empty directory.
+- [x] Test `ftp_rmdir`: Attempt to remove a non-empty directory.
 
 ## File and Directory Manipulation Tools
 - [ ] Test `ftp_rename`: Rename a file.
