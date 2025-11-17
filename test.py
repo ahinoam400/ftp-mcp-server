@@ -1,15 +1,14 @@
 # pytest integration test
-from fastmcp.exceptions import ToolError
 import pytest
-from fastmcp.client import Client
-from fastmcp.client.transports import FastMCPTransport
 import pytest_asyncio
 
-
-
 from fastmcp import FastMCP
+from fastmcp.client import Client
+from fastmcp.client.transports import FastMCPTransport
+from fastmcp.exceptions import ToolError
+
 from ftp_client_logic import (ftp_connect, ftp_disconnect, ftp_list, ftp_nlst, ftp_mlsd, ftp_retrieve_file,
-                            ftp_store_file, ftp_store_file_unique, ftp_cwd, ftp_cwd, ftp_rename, ftp_mkdir,
+                            ftp_store_file, ftp_store_file_unique, ftp_cwd, ftp_rename, ftp_mkdir,
                             ftp_rmdir, ftp_abort_transfer, ftp_cdup_directory,
                             ftp_get_file_size, ftp_send_command, ftp_void_command, ftp_delete_recursive, 
                             ftp_copy_recursive, logger)
@@ -26,6 +25,7 @@ mcp.tool()(ftp_mlsd)
 mcp.tool()(ftp_retrieve_file)
 mcp.tool()(ftp_store_file)
 mcp.tool()(ftp_store_file_unique)
+# Redundant ftp_cwd definition removed
 mcp.tool()(ftp_cwd)
 mcp.tool()(ftp_rename)
 mcp.tool()(ftp_mkdir)
@@ -177,7 +177,6 @@ async def test_ftp_retrieve_existing_file(main_mcp_client: Client[FastMCPTranspo
     # Disconnect from the FTP server
     await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
 
-
 @pytest.mark.asyncio
 async def test_ftp_store_overwrite_file(main_mcp_client: Client[FastMCPTransport]):
     """Tests the ftp_store_file tool for overwriting an existing file."""
@@ -185,8 +184,8 @@ async def test_ftp_store_overwrite_file(main_mcp_client: Client[FastMCPTransport
     connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
     session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
 
-    local_filepath = "temp_upload.txt"
-    remote_filename = "ע"
+    local_filepath = "temp_overwrite.txt"
+    remote_filename = "demo.txt"
 
     # Get original content of demo.txt to restore later
     original_content_response = await main_mcp_client.call_tool("ftp_retrieve_file", {"session_id": session_id, "filename": remote_filename})
@@ -198,13 +197,136 @@ async def test_ftp_store_overwrite_file(main_mcp_client: Client[FastMCPTransport
 
     # Verify the content of demo.txt has changed
     new_content_response = await main_mcp_client.call_tool("ftp_retrieve_file", {"session_id": session_id, "filename": remote_filename})
-    assert "This is a temporary file for upload." in new_content_response.data
+    assert "OVERWRITE" in new_content_response.data
     assert original_content != new_content_response.data
 
     # Restore original content of demo.txt
-    with open(local_filepath, 'w') as f:
+    with open("temp_upload.txt", "w") as f:
         f.write(original_content)
-    await main_mcp_client.call_tool("ftp_store_file", {"session_id": session_id, "local_filepath": local_filepath, "remote_filename": remote_filename})
+    await main_mcp_client.call_tool("ftp_store_file", {"session_id": session_id, "local_filepath": "temp_upload.txt", "remote_filename": remote_filename})
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+@pytest.mark.asyncio
+async def test_ftp_mkdir(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_mkdir tool for creating a new directory."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    directory_name = "test_mkdir_dir"
+
+    # Cleanup before test: ensure the directory does not exist
+    try:
+        await main_mcp_client.call_tool("ftp_delete_recursive", {"session_id": session_id, "remote_path": directory_name})
+    except ToolError:
+        pass  # Directory does not exist, which is fine
+
+    # Create the new directory
+    mkdir_response = await main_mcp_client.call_tool("ftp_mkdir", {"session_id": session_id, "directory_name": directory_name})
+    assert f"Successfully created directory '{directory_name}'." in mkdir_response.data
+
+    # Verify the directory exists on the server by listing the directory
+    nlst_response = await main_mcp_client.call_tool("ftp_nlst", {"session_id": session_id, "directory": "/"})
+    assert directory_name in nlst_response.data
+
+    # Clean up: delete the created directory from the server
+    await main_mcp_client.call_tool("ftp_rmdir", {"session_id": session_id, "directory_name": directory_name})
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_cwd(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_cwd tool for changing the current working directory."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    directory_name = "test_cwd_dir"
+
+    # Change the current working directory
+    cwd_response = await main_mcp_client.call_tool("ftp_cwd", {"session_id": session_id, "directory": directory_name})
+    assert f"Successfully changed directory to '/{directory_name}'" in cwd_response.data
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_cdup_directory(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_cdup_directory tool for changing to the parent directory."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    directory_name = "test_cdup_dir"
+
+    # Create a directory to change into
+    await main_mcp_client.call_tool("ftp_mkdir", {"session_id": session_id, "directory_name": directory_name})
+
+    # Change into the directory
+    await main_mcp_client.call_tool("ftp_cwd", {"session_id": session_id, "directory": directory_name})
+
+    # Change to the parent directory
+    cdup_response = await main_mcp_client.call_tool("ftp_cdup_directory", {"session_id": session_id})
+    assert "Successfully moved to parent directory." in cdup_response.data
+
+    # Clean up: delete the created directory from the server
+    await main_mcp_client.call_tool("ftp_rmdir", {"session_id": session_id, "directory_name": directory_name})
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_rmdir_empty(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_rmdir tool for removing an empty directory."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    directory_name = "test_rmdir_empty_dir"
+
+    # Create the new directory
+    await main_mcp_client.call_tool("ftp_mkdir", {"session_id": session_id, "directory_name": directory_name})
+
+    # Remove the empty directory
+    rmdir_response = await main_mcp_client.call_tool("ftp_rmdir", {"session_id": session_id, "directory_name": directory_name})
+    assert f"Successfully removed directory '{directory_name}'." in rmdir_response.data
+
+    # Verify the directory does not exist on the server by listing the directory
+    nlst_response = await main_mcp_client.call_tool("ftp_nlst", {"session_id": session_id, "directory": "/"})
+    assert directory_name not in nlst_response.data
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_rmdir_non_empty(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_rmdir tool for attempting to remove a non-empty directory."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    directory_name = "test_rmdir_non_empty_dir"
+
+    # Create the new directory
+    await main_mcp_client.call_tool("ftp_mkdir", {"session_id": session_id, "directory_name": directory_name})
+
+    # Upload a file to the directory to make it non-empty
+    await main_mcp_client.call_tool("ftp_store_file", {"session_id": session_id, "local_filepath": "temp_upload.txt", "remote_filename": f"{directory_name}/uploaded_file.txt"})
+
+    # Attempt to remove the non-empty directory
+    with pytest.raises(ToolError) as excinfo:
+        await main_mcp_client.call_tool("ftp_rmdir", {"session_id": session_id, "directory_name": directory_name})
+    assert "550" in str(excinfo.value)  # FTP error code for directory not empty
+
+    # Clean up: delete the file and the directory
+    await main_mcp_client.call_tool("ftp_delete_recursive", {"session_id": session_id, "remote_path": directory_name})
 
     # Disconnect from the FTP server
     await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
