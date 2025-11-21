@@ -24,7 +24,6 @@ mcp.tool()(ftp_nlst)
 mcp.tool()(ftp_mlsd)
 mcp.tool()(ftp_retrieve_file)
 mcp.tool()(ftp_store_file)
-mcp.tool()(ftp_store_file_unique)
 # Redundant ftp_cwd definition removed
 mcp.tool()(ftp_cwd)
 mcp.tool()(ftp_rename)
@@ -47,7 +46,7 @@ async def main_mcp_client():
 async def test_list_tools(main_mcp_client: Client[FastMCPTransport]):
     list_tools = await main_mcp_client.list_tools()
 
-    assert len(list_tools) == 19
+    assert len(list_tools) == 18
 
 
 @pytest.mark.asyncio
@@ -486,10 +485,19 @@ async def test_ftp_copy_recursive_directory(main_mcp_client: Client[FastMCPTrans
     connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
     session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
 
-    source_dir = "test_cwd_dir"
-    destination_dir = "copied_test_cwd_dir"
+    source_dir = f"test_copy_source_dir_{session_id}"
+    destination_dir = f"test_copy_dest_dir_{session_id}"
     nested_file_in_source = f"{source_dir}/nested_file.txt"
-    nested_file_in_destination = f"{destination_dir}/nested_file.txt"
+
+    # Cleanup before test: ensure the directories do not exist
+    try:
+        await main_mcp_client.call_tool("ftp_delete_recursive", {"session_id": session_id, "remote_path": source_dir})
+    except ToolError:
+        pass
+    try:
+        await main_mcp_client.call_tool("ftp_delete_recursive", {"session_id": session_id, "remote_path": destination_dir})
+    except ToolError:
+        pass
 
     # Make sure source_dir exists and has a file
     await main_mcp_client.call_tool("ftp_mkdir", {"session_id": session_id, "directory_name": source_dir})
@@ -551,6 +559,21 @@ async def test_ftp_void_command(main_mcp_client: Client[FastMCPTransport]):
     # Send a void command (NOOP should return a success message)
     void_command_response = await main_mcp_client.call_tool("ftp_void_command", {"session_id": session_id, "command": command})
     assert f"Command '{command}' sent successfully." in void_command_response.data
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_abort_transfer(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_abort_transfer tool."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    # Call abort transfer (even if no transfer is in progress, it should return success or a handled error)
+    abort_response = await main_mcp_client.call_tool("ftp_abort_transfer", {"session_id": session_id})
+    assert "Previous command aborted successfully." in abort_response.data
 
     # Disconnect from the FTP server
     await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})

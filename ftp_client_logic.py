@@ -457,7 +457,18 @@ def ftp_get_file_size(session_id: str, file_path: str) -> str:
     """
     ftp = _check_session(session_id)
     try:
+        # Store current transfer type (assuming it's usually ASCII for general operations)
+        # We cannot reliably query the current type with a simple command that returns it.
+        # Instead, we will force ASCII, then BINARY, then back to ASCII.
+        ftp.voidcmd('TYPE A')  # Ensure ASCII mode initially
+
+        # Set transfer type to binary for SIZE command
+        ftp.voidcmd('TYPE I')
         size = ftp.size(file_path)
+        
+        # Restore ASCII mode after getting size
+        ftp.voidcmd('TYPE A')
+
         logger.info(f"Size of '{file_path}' is {size} bytes.")
         return f"File size: {size} bytes."
     except Exception as e:
