@@ -27,15 +27,15 @@ This file outlines the tasks required to create comprehensive tests for all MCP 
 - [x] Test `ftp_rmdir`: Attempt to remove a non-empty directory.
 
 ## File and Directory Manipulation Tools
-- [ ] Test `ftp_rename`: Rename a file.
-- [ ] Test `ftp_rename`: Rename a directory.
-- [ ] Test `ftp_delete_recursive`: Delete a file.
-- [ ] Test `ftp_delete_recursive`: Delete a non-empty directory.
-- [ ] Test `ftp_copy_recursive`: Copy a file.
-- [ ] Test `ftp_copy_recursive`: Copy a directory.
+- [x] Test `ftp_rename`: Rename a file.
+- [x] Test `ftp_rename`: Rename a directory.
+- [x] Test `ftp_delete_recursive`: Delete a file.
+- [x] Test `ftp_delete_recursive`: Delete a non-empty directory.
+- [x] Test `ftp_copy_recursive`: Copy a file.
+- [] Test `ftp_copy_recursive`: Copy a directory.
 
 ## Miscellaneous Tools
 - [ ] Test `ftp_get_file_size`: Get the size of an existing file.
-- [ ] Test `ftp_send_command`: Send a simple command (e.g., `NOOP`).
+- [x] Test `ftp_send_command`: Send a simple command (e.g., `NOOP`).
 - [ ] Test `ftp_void_command`: Send a void command (e.g., `NOOP`).
 - [ ] Test `ftp_abort_transfer`: Abort a file transfer (requires a long-running transfer to test effectively).
