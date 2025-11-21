@@ -199,9 +199,17 @@ def _ftp_store_methods_helper(session_id: str, is_unique_store: bool, local_file
     try:
         with open(local_filepath, 'rb') as f:
             if is_unique_store:
-                # parsing ftplib's stou() response string to get the unique filename.
-                server_response = ftp.stou(f)
-                unique_filename = re.search(r'\"(.+)\"', server_response).group(1)
+                # Send STOU command and parse the unique filename from the server's response
+                stou_command = f"STOU {Path(local_filepath).name}" # Suggest a name, server will make it unique
+                server_response = ftp.sendcmd(stou_command)
+                # Expected response: 150 FILE: <filename>
+                match = re.search(r'FILE: (.+)', server_response)
+                if not match:
+                    raise ToolError(f"Failed to parse unique filename from STOU response: {server_response}")
+                unique_filename = match.group(1).strip()
+
+                # Upload the file using the unique filename provided by the server
+                ftp.storbinary(f"STOR {unique_filename}", f)
                 logger.info(f"Uploaded '{local_filepath}' to '{unique_filename}' for session '{session_id}'.")
                 return f"File uploaded successfully with unique name: {unique_filename}"
             else:

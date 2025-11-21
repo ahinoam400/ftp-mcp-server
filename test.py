@@ -24,6 +24,7 @@ mcp.tool()(ftp_nlst)
 mcp.tool()(ftp_mlsd)
 mcp.tool()(ftp_retrieve_file)
 mcp.tool()(ftp_store_file)
+mcp.tool()(ftp_store_file_unique)
 # Redundant ftp_cwd definition removed
 mcp.tool()(ftp_cwd)
 mcp.tool()(ftp_rename)
@@ -46,7 +47,7 @@ async def main_mcp_client():
 async def test_list_tools(main_mcp_client: Client[FastMCPTransport]):
     list_tools = await main_mcp_client.list_tools()
 
-    assert len(list_tools) == 18
+    assert len(list_tools) == 19
 
 
 @pytest.mark.asyncio
@@ -206,6 +207,36 @@ async def test_ftp_store_overwrite_file(main_mcp_client: Client[FastMCPTransport
 
     # Disconnect from the FTP server
     await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
+
+@pytest.mark.asyncio
+async def test_ftp_store_file_unique(main_mcp_client: Client[FastMCPTransport]):
+    """Tests the ftp_store_file_unique tool for uploading a file with a unique name."""
+    # Connect to the FTP server
+    connect_response = await main_mcp_client.call_tool("ftp_connect", {"host": "127.0.0.1", "port": 2121, "username": "user", "password": "12345"})
+    session_id = connect_response.data.split("Your session ID is: ")[1].split(".")[0]
+
+    local_filepath = "temp_upload.txt"
+
+    # Upload the file with a unique name
+    store_unique_response = await main_mcp_client.call_tool("ftp_store_file_unique", {"session_id": session_id, "local_filepath": local_filepath})
+    assert "File uploaded successfully with unique name:" in store_unique_response.data
+    
+    unique_filename = store_unique_response.data.split(": ")[1]
+
+    # Verify the file exists on the server by listing the directory
+    nlst_response = await main_mcp_client.call_tool("ftp_nlst", {"session_id": session_id, "directory": "/"})
+    assert unique_filename in nlst_response.data
+
+    # Clean up: delete the uploaded file from the server
+    await main_mcp_client.call_tool("ftp_delete_recursive", {"session_id": session_id, "remote_path": unique_filename})
+
+    # Disconnect from the FTP server
+    await main_mcp_client.call_tool("ftp_disconnect", {"session_id": session_id})
+
 
 @pytest.mark.asyncio
 async def test_ftp_mkdir(main_mcp_client: Client[FastMCPTransport]):

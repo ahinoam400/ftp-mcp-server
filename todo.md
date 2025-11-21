@@ -17,7 +17,7 @@ This file outlines the tasks required to create comprehensive tests for all MCP 
 - [x] Test `ftp_retrieve_file`: Attempt to retrieve a non-existent file.
 - [x] Test `ftp_store_file`: Upload a new file.
 - [x] Test `ftp_store_file`: Overwrite an existing file.
-- [ ] Test `ftp_store_file_unique`: Upload a file and verify a unique name is generated.
+- [x] Test `ftp_store_file_unique`: Upload a file and verify a unique name is generated.
 
 ## Directory Management Tools
 - [x] Test `ftp_mkdir`: Create a new directory.
