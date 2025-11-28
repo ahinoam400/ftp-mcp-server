@@ -224,7 +224,8 @@ def _ftp_store_methods_helper(session_id: str, is_unique_store: bool, local_file
 
 def ftp_store_file(session_id: str, local_filepath: str, remote_filename: Optional[str] = None) -> str:
     """
-    Uploads a local file to a remote FTP server using an active session.
+    Uploads a local file to a remote FTP server using an active session. 
+    If a file with that name already exists, it will be overwritten.
     
     :param session_id: The unique ID of the active session.
     :param local_filepath: The path to the local file to upload.
@@ -452,9 +453,6 @@ def ftp_cdup_directory(session_id: str) -> str:
         raise ToolError(f"Error changing to parent directory: {e}")
 
 
-
-
-
 def ftp_get_file_size(session_id: str, file_path: str) -> str:
     """
     Sends a 'SIZE' command to the server to get a file's size.
@@ -465,10 +463,8 @@ def ftp_get_file_size(session_id: str, file_path: str) -> str:
     """
     ftp = _check_session(session_id)
     try:
-        # Store current transfer type (assuming it's usually ASCII for general operations)
-        # We cannot reliably query the current type with a simple command that returns it.
-        # Instead, we will force ASCII, then BINARY, then back to ASCII.
-        ftp.voidcmd('TYPE A')  # Ensure ASCII mode initially
+        # Ensure ASCII mode initially
+        ftp.voidcmd('TYPE A')  
 
         # Set transfer type to binary for SIZE command
         ftp.voidcmd('TYPE I')
