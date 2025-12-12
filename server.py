@@ -3,7 +3,7 @@ from fastmcp import FastMCP
 from fastmcp.exceptions import ToolError
 
 from ftp_client_logic import (ftp_connect, ftp_disconnect, ftp_list, ftp_nlst, ftp_mlsd, ftp_retrieve_file,
-                              ftp_store_file, ftp_store_file_unique, ftp_cwd, ftp_cwd, ftp_rename, ftp_mkdir,
+                              ftp_store_file, ftp_store_file_unique, ftp_cwd, ftp_rename, ftp_mkdir,
                               ftp_rmdir, ftp_abort_transfer, ftp_cdup_directory,
                               ftp_get_file_size, ftp_send_command, ftp_void_command, ftp_delete_recursive, 
                               ftp_copy_recursive, logger)

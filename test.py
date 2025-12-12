@@ -2,41 +2,11 @@
 import pytest
 import pytest_asyncio
 
+from server import mcp
 from fastmcp import FastMCP
 from fastmcp.client import Client
 from fastmcp.client.transports import FastMCPTransport
 from fastmcp.exceptions import ToolError
-
-from ftp_client_logic import (ftp_connect, ftp_disconnect, ftp_list, ftp_nlst, ftp_mlsd, ftp_retrieve_file,
-                            ftp_store_file, ftp_store_file_unique, ftp_cwd, ftp_rename, ftp_mkdir,
-                            ftp_rmdir, ftp_abort_transfer, ftp_cdup_directory,
-                            ftp_get_file_size, ftp_send_command, ftp_void_command, ftp_delete_recursive, 
-                            ftp_copy_recursive, logger)
-
-# Initialize the MCP server
-mcp = FastMCP("FTPClient")
-
-# Wrap the logic functions with the MCP tool decorator
-mcp.tool()(ftp_connect)
-mcp.tool()(ftp_disconnect)
-mcp.tool()(ftp_list)
-mcp.tool()(ftp_nlst)
-mcp.tool()(ftp_mlsd)
-mcp.tool()(ftp_retrieve_file)
-mcp.tool()(ftp_store_file)
-mcp.tool()(ftp_store_file_unique)
-# Redundant ftp_cwd definition removed
-mcp.tool()(ftp_cwd)
-mcp.tool()(ftp_rename)
-mcp.tool()(ftp_mkdir)
-mcp.tool()(ftp_rmdir)
-mcp.tool()(ftp_abort_transfer)
-mcp.tool()(ftp_cdup_directory)
-mcp.tool()(ftp_get_file_size)
-mcp.tool()(ftp_send_command)
-mcp.tool()(ftp_void_command)
-mcp.tool()(ftp_delete_recursive)
-mcp.tool()(ftp_copy_recursive)
 
 @pytest_asyncio.fixture
 async def main_mcp_client():
