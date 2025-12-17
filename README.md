@@ -1,4 +1,4 @@
-# My Python MCP Server
+# FTP MCP Server
 
 This project contains two main components:
 1.  An MCP server with FTP client capabilities.
@@ -15,7 +15,7 @@ This project contains two main components:
 1.  **Clone the repository (or download the files):**
     ```bash
     git clone <repository-url>
-    cd my-python-mcp-server
+    cd ftp-mcp-server
     ```
 
 2.  **Create and activate a virtual environment:**
@@ -70,8 +70,8 @@ This project contains two main components:
     {
       "mcpServers": {
         "my-python-ftp-server": {
-          "command": "/path/to/your/my-python-mcp-server/.venv/Scripts/python.exe",
-          "args": ["/path/to/your/my-python-mcp-server/server.py"],
+          "command": "<path_to_this_project>/.venv/Scripts/python.exe",
+          "args": ["<path_to_this_project>/server.py"],
           "type": "stdio"
         }
       }
